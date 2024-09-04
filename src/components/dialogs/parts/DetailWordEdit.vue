@@ -8,18 +8,36 @@
 
     <div class="text-subtitle-1 text-medium-emphasis">Word Text</div>
 
-    <v-text-field density="compact" variant="outlined" v-model="wordText"></v-text-field>
+    <v-text-field
+      density="compact"
+      variant="outlined"
+      v-model="wordText"
+      :rules="[textRules.required]"
+    ></v-text-field>
 
     <div class="text-subtitle-1 text-medium-emphasis">Word Type</div>
 
-    <v-radio-group inline v-model="wordType" density="comfortable">
+    <!-- <v-radio-group inline v-model="wordType" density="comfortable" :rules="[typeRules.required]">
       <v-radio label="Noun" value="noun"></v-radio>
       <v-radio label="Verb" value="verb"></v-radio>
       <v-radio label="Adjective" value="adjective"></v-radio>
       <v-radio label="Adverb" value="adverb"></v-radio>
       <v-radio label="Idiom" value="idiom"></v-radio>
       <v-radio label="Other" value="other"></v-radio>
-    </v-radio-group>
+    </v-radio-group> -->
+
+    <v-responsive class="overflow-y-auto" max-height="280">
+      <v-chip-group mandatory column filter v-model="selectedType">
+        <WordTypeChip
+          v-for="key in typeKeys"
+          :key="key"
+          :type-key="key"
+          :value="key"
+          :variant="chipStyle(key)"
+          size="small"
+        ></WordTypeChip>
+      </v-chip-group>
+    </v-responsive>
 
     <div class="text-subtitle-1 text-medium-emphasis">Your Memo</div>
 
@@ -32,7 +50,15 @@
       variant="outlined"
     ></v-textarea>
 
-    <v-btn color="blue" size="large" variant="tonal" block @click="onSave" :loading="isSaving">
+    <v-btn
+      color="blue"
+      size="large"
+      variant="tonal"
+      block
+      @click="onSave"
+      :loading="isSaving"
+      :disabled="validationError"
+    >
       Save
     </v-btn>
 
@@ -58,7 +84,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+
+import { useWordStore } from '@/stores/word';
+
+import WordTypeChip from '@/components/parts/WordTypeChip.vue';
 
 const props = defineProps({
   lang: String,
@@ -66,15 +96,33 @@ const props = defineProps({
 });
 const emits = defineEmits(['editSave', 'editCancel', 'delete']);
 
+const store = useWordStore();
+
 const wordText = ref(props.word.text);
 const wordType = ref(props.word.type);
 const wordDesc = ref(props.word.description);
 const deleteDialog = ref(false);
 const isSaving = ref(false);
 const isDeleting = ref(false);
+const typeKeys = store.getTypeKeys();
+const selectedType = ref(typeKeys[0]);
+const validationError = computed(() => {
+  return textError.value;
+});
+const textError = ref(false);
+
+const textRules = {
+  required: (value) => {
+    if (!!value) {
+      textError.value = false;
+      return true;
+    }
+    textError.value = true;
+    return 'Word text is required.';
+  }
+};
 
 function onSave() {
-  // TODO Add validation
   isSaving.value = true;
   const payload = {
     text: wordText.value,
@@ -96,5 +144,9 @@ function cancelDelete() {
 }
 function confirmDelete() {
   deleteDialog.value = true;
+}
+function chipStyle(key) {
+  const isSelected = selectedType.value === key;
+  return isSelected ? 'elevated' : 'outlined';
 }
 </script>

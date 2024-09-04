@@ -1,8 +1,8 @@
-import { computed, ref, toValue, watch } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
+import { computed, ref, watch } from 'vue';
+import { defineStore } from 'pinia';
 
 import { useUserStore } from './user';
-import { wordData, wordTypeData } from './data/wordData';
+import { wordTypeData } from './data/wordData';
 import { langData } from './data/langData';
 import { useFirebase } from '@/composables/firebase';
 
