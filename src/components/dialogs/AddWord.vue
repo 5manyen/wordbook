@@ -8,27 +8,40 @@
 
     <div class="text-subtitle-1 text-medium-emphasis">Language</div>
 
-    <v-select :items="langNameList" v-model="lang" density="compact" variant="outlined"> </v-select>
+    <v-select :items="langNameList" v-model="lang" density="compact" variant="outlined"></v-select>
 
     <div class="text-subtitle-1 text-medium-emphasis">Word Text</div>
 
     <v-text-field
       density="compact"
       variant="outlined"
-      placeholder="doggo"
       v-model="text"
+      :rules="[textRules.required]"
     ></v-text-field>
 
     <div class="text-subtitle-1 text-medium-emphasis">Word Type</div>
 
-    <v-radio-group inline v-model="type" density="comfortable">
+    <!-- <v-radio-group inline v-model="type" density="comfortable" :rules="[typeRules.required]">
       <v-radio label="Noun" value="noun"></v-radio>
       <v-radio label="Verb" value="verb"></v-radio>
       <v-radio label="Adjective" value="adjective"></v-radio>
       <v-radio label="Adverb" value="adverb"></v-radio>
       <v-radio label="Idiom" value="idiom"></v-radio>
       <v-radio label="Other" value="other"></v-radio>
-    </v-radio-group>
+    </v-radio-group> -->
+
+    <v-responsive class="overflow-y-auto" max-height="280">
+      <v-chip-group mandatory column filter v-model="selectedType">
+        <WordTypeChip
+          v-for="key in typeKeys"
+          :key="key"
+          :type-key="key"
+          :value="key"
+          :variant="chipStyle(key)"
+          size="small"
+        ></WordTypeChip>
+      </v-chip-group>
+    </v-responsive>
 
     <div class="text-subtitle-1 text-medium-emphasis">Your Memo</div>
 
@@ -41,19 +54,27 @@
       variant="outlined"
     ></v-textarea>
 
-    <v-btn class="mb-8" color="blue" size="large" variant="tonal" block @click="submit">
+    <v-btn
+      color="blue"
+      size="large"
+      variant="tonal"
+      block
+      @click="submit"
+      :disabled="validationError"
+    >
       Submit
     </v-btn>
   </v-card>
 </template>
 
 <script setup>
-import { ref, toValue } from 'vue';
+import { computed, ref } from 'vue';
 import { useWordStore } from '@/stores/word';
+
+import WordTypeChip from '../parts/WordTypeChip.vue';
 
 const emits = defineEmits(['close']);
 const text = ref('');
-const type = ref(null);
 const description = ref('');
 const isLoading = ref(false);
 
@@ -69,19 +90,38 @@ const lang = ref(null);
 if (store.currentTab) {
   lang.value = store.obtainLangName(store.currentTab);
 }
+const typeKeys = store.getTypeKeys();
+const selectedType = ref(typeKeys[0]);
+
+const validationError = computed(() => {
+  return textError.value;
+});
+const textError = ref(false);
+
+const textRules = {
+  required: (value) => {
+    if (!!value) {
+      textError.value = false;
+      return true;
+    }
+    textError.value = true;
+    return 'Word text is required.';
+  }
+};
 
 async function submit() {
   isLoading.value = true;
-  const inputText = toValue(text);
-  const inputType = toValue(type);
-  const inputDescription = toValue(description);
-  const inputLang = supportLang[toValue(lang)];
+  const inputText = text.value;
+  const inputType = selectedType.value;
+  const inputDescription = description.value;
+  const inputLang = supportLang[lang.value];
   await store.addWord(inputText, inputType, inputDescription, inputLang);
   isLoading.value = false;
-  text.value = '';
-  type.value = 0;
-  description.value = '';
-  lang.value = null;
   emits('close');
+}
+
+function chipStyle(key) {
+  const isSelected = selectedType.value === key;
+  return isSelected ? 'elevated' : 'outlined';
 }
 </script>
