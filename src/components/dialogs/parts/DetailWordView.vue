@@ -78,15 +78,13 @@ async function onClickAskAI(word, type) {
   isGenerating.value = true;
 
   const typeText = type && type !== 'other' ? ` ${type} ` : ' ';
-  const prompt = `You are an expert of ${langName}. 
-  Explain grammatical details of a ${langName}${typeText}"${word}".`;
 
-  const { generated, error } = await useGemini(prompt);
+  const { content, error } = await useGemini(langName, typeText, word);
 
-  if (error.value) {
+  if (error) {
     resultHtml.value = 'Something went wrong. Please try again later!';
   } else {
-    resultHtml.value = generated.value;
+    resultHtml.value = content;
   }
   isGenerating.value = false;
 }
