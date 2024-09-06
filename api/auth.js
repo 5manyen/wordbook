@@ -31,7 +31,6 @@ export async function POST(request) {
   const result = await fetch(authUrl, option);
   const json = await result.json();
   const uid = json.localId;
-  console.log(uid);
   const idToken = json.idToken;
   return util.okResponse({ uid, idToken });
 }
