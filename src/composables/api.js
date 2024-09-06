@@ -39,7 +39,6 @@ async function callAuthApi(userName, password, mode) {
     })
   };
   const response = await fetch(authApi, option);
-
   const result = {
     userData: {
       uid: null,
@@ -50,25 +49,42 @@ async function callAuthApi(userName, password, mode) {
   };
   if (response.ok) {
     const json = await response.json();
-    const uid = json.localId;
+    const uid = json.uid;
     const idToken = json.idToken;
-    result.userData.uid = uid;
-    result.userData.idToken = idToken;
+    if (uid && idToken) {
+      result.userData.uid = uid;
+      result.userData.idToken = idToken;
 
-    if (mode !== 'login') {
-      const template = {
-        userName: userName,
-        words: {},
-        languages: []
-      };
-      const updated = await callWordApi(uid, idToken, template);
-      if (!updated) {
-        result.error = true;
+      if (mode !== 'login') {
+        const template = {
+          userName: userName,
+          words: {},
+          languages: []
+        };
+        const updated = await callWordApi(uid, idToken, template);
+        if (!updated) {
+          result.error = true;
+        }
       }
+    } else {
+      result.error = true;
     }
   } else {
     result.error = true;
   }
   return result;
 }
-async function callWordApi(uid, idToken, wordData) {}
+async function callWordApi(uid, idToken, wordData) {
+  const wordUrl = '/api/word';
+  const method = wordData ? 'PATCH' : 'POST';
+  const option = {
+    method: method,
+    body: JSON.stringify({
+      uid: uid,
+      idToken: idToken,
+      wordData: wordData
+    })
+  };
+  const response = await fetch(wordUrl, option);
+  return method === 'PATCH' ? response.ok : await response.json();
+}

@@ -2,7 +2,7 @@ export const useApiUtility = () => {
   const allowOrigin = 'http://127.0.0.1:5173';
 
   function errorResponse() {
-    return new Response('Invalid parameters.', {
+    return new Response(JSON.stringify('Invalid parameter(s).'), {
       status: 400,
       headers: {
         'Access-Control-Allow-Origin': allowOrigin

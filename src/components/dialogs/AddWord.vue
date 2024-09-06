@@ -115,9 +115,12 @@ async function submit() {
   const inputType = selectedType.value;
   const inputDescription = description.value;
   const inputLang = supportLang[lang.value];
-  await store.addWord(inputText, inputType, inputDescription, inputLang);
+  const result = await store.addWord(inputText, inputType, inputDescription, inputLang);
   isLoading.value = false;
-  emits('close');
+  if (result) {
+    emits('close');
+  }
+  console.log('add result: ' + result);
 }
 
 function chipStyle(key) {
