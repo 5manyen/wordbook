@@ -78,31 +78,35 @@ const loading = ref(false);
 const visible = ref(false);
 const submitError = ref(false);
 const submitErrorMessage = ref(null);
-const validationError = ref(false);
+const validationError = computed(() => {
+  return userNameError.value || passwordError.value;
+});
+const userNameError = ref(false);
+const passwordError = ref(false);
 
 const userNameRules = {
   required: (value) => {
     if (!!value) {
-      validationError.value = false;
+      userNameError.value = false;
       return true;
     }
-    validationError.value = true;
+    userNameError.value = true;
     return 'User name is required.';
   },
   checkLength: (value) => {
     if (value.length > 3) {
-      validationError.value = false;
+      userNameError.value = false;
       return true;
     }
-    validationError.value = true;
+    userNameError.value = true;
     return 'User name must be 4 characters or more.';
   },
   checkPattern: (value) => {
     if (/^\w+$/.test(value)) {
-      validationError.value = false;
+      userNameError.value = false;
       return true;
     }
-    validationError.value = true;
+    userNameError.value = true;
     return 'Alphabet, number and underscore can be used as user name.';
   }
 };
@@ -110,26 +114,26 @@ const userNameRules = {
 const passwordRules = {
   required: (value) => {
     if (!!value) {
-      validationError.value = false;
+      passwordError.value = false;
       return true;
     }
-    validationError.value = true;
+    passwordError.value = true;
     return 'Password is required.';
   },
   checkLength: (value) => {
     if (value.length > 5) {
-      validationError.value = false;
+      passwordError.value = false;
       return true;
     }
-    validationError.value = true;
+    passwordError.value = true;
     return 'Password must be 6 characters or more.';
   },
   checkPattern: (value) => {
     if (/^\w+$/.test(value)) {
-      validationError.value = false;
+      passwordError.value = false;
       return true;
     }
-    validationError.value = true;
+    passwordError.value = true;
     return 'Alphabet, number and underscore can be used as user name.';
   }
 };
