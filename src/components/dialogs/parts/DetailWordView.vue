@@ -47,7 +47,7 @@ import { computed, ref } from 'vue';
 
 import { useDisplay } from 'vuetify/lib/framework.mjs';
 import { useWordStore } from '@/stores/word';
-import { useGemini } from '@/composables/gemini';
+import { useApi } from '@/composables/api';
 
 import WordTypeChip from '../../parts/WordTypeChip.vue';
 
@@ -75,18 +75,18 @@ const askAICaption = computed(() => {
 const resultHtml = ref('');
 
 async function onClickAskAI(word, type) {
+  resultHtml.value = '';
   isGenerating.value = true;
 
   const typeText = type && type !== 'other' ? ` ${type} ` : ' ';
-  const prompt = `You are an expert of ${langName}. 
-  Explain grammatical details of a ${langName}${typeText}"${word}".`;
 
-  const { generated, error } = await useGemini(prompt);
+  const api = useApi();
+  const { content, error } = await api.callAskaiApi(langName, typeText, word);
 
-  if (error.value) {
+  if (error) {
     resultHtml.value = 'Something went wrong. Please try again later!';
   } else {
-    resultHtml.value = generated.value;
+    resultHtml.value = content;
   }
   isGenerating.value = false;
 }

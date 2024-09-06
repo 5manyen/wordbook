@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 
 import { useWordStore } from './word';
-import { useFirebase } from '@/composables/firebase';
+import { useApi } from '@/composables/api';
 
 export const useUserStore = defineStore('user', () => {
   const userContext = ref({
@@ -18,8 +18,8 @@ export const useUserStore = defineStore('user', () => {
   });
 
   async function signUp(userName, password) {
-    const firebase = useFirebase();
-    const result = await firebase.signUp(userName, password);
+    const api = useApi();
+    const result = await api.callAuthApi(userName, password, 'signup');
 
     if (!result.error) {
       const userData = result.userData;
@@ -32,8 +32,8 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function login(userName, password) {
-    const firebase = useFirebase();
-    const result = await firebase.logIn(userName, password);
+    const api = useApi();
+    const result = await api.callAuthApi(userName, password, 'login');
 
     if (!result.error) {
       const userData = result.userData;

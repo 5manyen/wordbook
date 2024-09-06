@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { useUserStore } from './user';
 import { wordTypeData } from './data/wordData';
 import { langData } from './data/langData';
-import { useFirebase } from '@/composables/firebase';
+import { useApi } from '@/composables/api';
 
 export const useWordStore = defineStore('word', () => {
   const userStore = useUserStore();
@@ -20,8 +20,8 @@ export const useWordStore = defineStore('word', () => {
   });
 
   async function loadUserWords() {
-    const firebase = useFirebase();
-    const wordData = await firebase.fetchWordData(currentUser.value.uid, currentUser.value.idToken);
+    const api = useApi();
+    const wordData = await api.callWordApi(currentUser.value.uid, currentUser.value.idToken);
     if (wordData) {
       userWords.value = wordData;
       return;
@@ -106,8 +106,8 @@ export const useWordStore = defineStore('word', () => {
       currentTab.value = lang;
     }
 
-    const firebase = useFirebase();
-    const result = await firebase.updateWordData(
+    const api = useApi();
+    const result = await api.callWordApi(
       currentUser.value.uid,
       currentUser.value.idToken,
       userWords.value
@@ -125,8 +125,9 @@ export const useWordStore = defineStore('word', () => {
         description: description
       };
       userWords.value.words[lang].splice(index, 1, edited);
-      const firebase = useFirebase();
-      const result = await firebase.updateWordData(
+
+      const api = useApi();
+      const result = await api.callWordApi(
         currentUser.value.uid,
         currentUser.value.idToken,
         userWords.value
@@ -140,8 +141,9 @@ export const useWordStore = defineStore('word', () => {
     const index = userWords.value.words[lang].findIndex((word) => word.id === id);
     if (index > -1) {
       userWords.value.words[lang].splice(index, 1);
-      const firebase = useFirebase();
-      const result = await firebase.updateWordData(
+
+      const api = useApi();
+      const result = await api.callWordApi(
         currentUser.value.uid,
         currentUser.value.idToken,
         userWords.value
