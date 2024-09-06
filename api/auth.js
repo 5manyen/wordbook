@@ -12,7 +12,7 @@ export async function POST(request) {
     return util.errorResponse();
   }
 
-  const apiKey = process.env.VITE_FIREBASE_APIKEY;
+  const apiKey = process.env.FIREBASE_APIKEY;
   const authUrl =
     mode === 'login'
       ? `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`

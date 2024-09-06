@@ -12,7 +12,7 @@ export async function PATCH(request) {
     return util.errorResponse();
   }
 
-  const baseUrl = process.env.VITE_FIREBASE_DOMAIN_DATA;
+  const baseUrl = process.env.FIREBASE_DOMAIN_DATA;
   const wordsUrl = `${baseUrl}/users/${uid}/data.json?auth=${idToken}`;
   const option = {
     method: 'PATCH',
@@ -32,7 +32,7 @@ export async function POST(request) {
     return util.errorResponse();
   }
 
-  const baseUrl = process.env.VITE_FIREBASE_DOMAIN_DATA;
+  const baseUrl = process.env.FIREBASE_DOMAIN_DATA;
   const wordsUrl = `${baseUrl}/users/${uid}/data.json?auth=${idToken}`;
   const response = await fetch(wordsUrl);
   if (response.ok) {

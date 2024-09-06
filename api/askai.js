@@ -18,7 +18,7 @@ export async function POST(request) {
   const prompt = `You are an expert of ${lang}.
   Explain grammatical details of a ${lang} ${typeText} "${word}".`;
 
-  const apiKey = process.env.VITE_GEMINI_APIKEY;
+  const apiKey = process.env.GEMINI_APIKEY;
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
   console.log('prompt: ' + prompt);
