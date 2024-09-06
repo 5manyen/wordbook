@@ -1,21 +1,17 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { marked } from 'marked';
+import { useApiUtility } from './_utility.js';
 
-export async function GET(request) {
-  const params = new URL(request.url).searchParams;
-  const lang = params.get('lang');
-  const word = params.get('word');
-  const type = params.get('type');
+export async function POST(request) {
+  const body = await request.json();
+  const lang = body.lang;
+  const word = body.word;
+  const type = body.type;
 
-  const allowOrigin = 'http://127.0.0.1:5173';
+  const util = useApiUtility();
 
   if (!lang || !word || !type) {
-    return new Response('Invalid parameters.', {
-      status: 400,
-      headers: {
-        'Access-Control-Allow-Origin': allowOrigin
-      }
-    });
+    return util.errorResponse();
   }
 
   const typeText = type && type !== 'other' ? `${type}` : '';
@@ -29,18 +25,10 @@ export async function GET(request) {
   const result = await model.generateContent(prompt);
   const response = result.response;
   if (response.candidates.length === 0) {
-    return new Response('no result.', {
-      headers: {
-        'Access-Control-Allow-Origin': 'http://127.0.0.1:5173'
-      }
-    });
+    return util.okResponse('no result responded.');
   } else {
     const text = response.text();
     const markdown = await marked(text);
-    return new Response(JSON.stringify({ prompt, markdown }), {
-      headers: {
-        'Access-Control-Allow-Origin': 'http://127.0.0.1:5173'
-      }
-    });
+    return util.okResponse({ prompt, markdown });
   }
 }
