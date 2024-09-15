@@ -61,6 +61,7 @@
       block
       @click="submit"
       :disabled="validationError"
+      :loading="isLoading"
     >
       Submit
     </v-btn>
@@ -120,7 +121,6 @@ async function submit() {
   if (result) {
     emits('close');
   }
-  console.log('add result: ' + result);
 }
 
 function chipStyle(key) {

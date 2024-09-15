@@ -41,8 +41,10 @@ function onEditCancel() {
   editMode.value = false;
 }
 function onEditSave(payload, callback) {
-  emits('modified', payload, callback);
-  editMode.value = false;
+  emits('modified', payload, () => {
+    callback();
+    editMode.value = false;
+  });
 }
 function onDelete(callback) {
   emits('delete', callback);

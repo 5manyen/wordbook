@@ -99,7 +99,6 @@ const emits = defineEmits(['editSave', 'editCancel', 'delete']);
 const store = useWordStore();
 
 const wordText = ref(props.word.text);
-// const wordType = ref(props.word.type);
 const wordDesc = ref(props.word.description);
 const deleteDialog = ref(false);
 const isSaving = ref(false);
@@ -137,8 +136,10 @@ function onCancel() {
 }
 function onDelete() {
   isDeleting.value = true;
-  deleteDialog.value = false;
-  emits('delete', () => (isDeleting.value = false));
+  emits('delete', () => {
+    deleteDialog.value = false;
+    isDeleting.value = false;
+  });
 }
 function cancelDelete() {
   deleteDialog.value = false;
