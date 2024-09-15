@@ -29,8 +29,6 @@ export const useWordStore = defineStore('word', () => {
       if (!wordData.words) {
         wordData.words = {};
       }
-      console.log(wordData);
-
       userWords.value = wordData;
       return;
     }
