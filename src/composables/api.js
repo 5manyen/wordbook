@@ -103,12 +103,9 @@ async function callWordApi(uid, wordData) {
     })
   };
   const response = await fetch(wordUrl, option);
-  console.log('method: ' + method + ', result: ' + response.ok);
   if (method === 'PATCH') {
     return response.ok;
   } else {
-    console.log('POST result: ' + response.ok);
-    console.log(response);
     if (response.ok) {
       return await response.json();
     }
