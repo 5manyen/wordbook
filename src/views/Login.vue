@@ -149,21 +149,25 @@ const modeSwitchCaption = computed(() => {
 async function submit() {
   loading.value = true;
   submitError.value = false;
-  if (loginMode.value) {
-    const result = await store.login(userName.value, password.value);
-    if (result) {
-      router.replace('/');
-      return;
+  let result = false;
+  let errorMessage = '';
+  try {
+    if (loginMode.value) {
+      result = await store.login(userName.value, password.value);
+      errorMessage = 'Authentication failed. Please check your input and try again.';
+    } else {
+      result = await store.signUp(userName.value, password.value);
+      errorMessage = 'Username already used. Please pick other name and try again.';
     }
-    submitErrorMessage.value = 'Authentication failed. Please check your input and try again.';
-  } else {
-    const result = await store.signUp(userName.value, password.value);
-    if (result) {
-      router.replace('/');
-      return;
-    }
-    submitErrorMessage.value = 'Username already used. Please pick other name and try again.';
+  } catch (err) {
+    console.log(err);
+    // if there is an error, result remain false.
   }
+  if (result) {
+    router.replace('/');
+    return;
+  }
+  submitErrorMessage.value = errorMessage;
   submitError.value = true;
   loading.value = false;
 }

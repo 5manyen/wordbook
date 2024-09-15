@@ -1,5 +1,5 @@
 export function useApi() {
-  return { callAskaiApi, callAuthApi, callWordApi };
+  return { callAskaiApi, callWordApi, login, signup, logout };
 }
 
 async function callAskaiApi(langName, typeText, word) {
@@ -28,63 +28,109 @@ async function callAskaiApi(langName, typeText, word) {
   }
   return result;
 }
-async function callAuthApi(userName, password, mode) {
-  const authApi = '/api/auth';
+
+async function login(userName, password) {
   const option = {
     method: 'POST',
     body: JSON.stringify({
       userName: userName,
       password: password,
-      mode: mode
+      mode: 'login'
     })
   };
-  const response = await fetch(authApi, option);
-  const result = {
-    userData: {
-      uid: null,
-      idToken: null,
-      userName: userName
-    },
-    error: false
+  const json = await callAuthApi(option);
+  if (json) {
+    const userData = { uid: json.uid };
+    return userData;
+  }
+}
+
+async function signup(userName, password) {
+  const option = {
+    method: 'POST',
+    body: JSON.stringify({
+      userName: userName,
+      password: password,
+      mode: 'signup'
+    })
   };
+  const json = await callAuthApi(option);
+  if (json) {
+    const uid = json.uid;
+    const userData = { uid };
+    const template = {
+      userName: userName,
+      words: {},
+      languages: []
+    };
+    const updated = await callWordApi(uid, template);
+    if (!updated) {
+      return null;
+    }
+
+    return userData;
+  }
+}
+
+async function logout(uid) {
+  const option = {
+    method: 'POST',
+    body: JSON.stringify({
+      uid,
+      mode: 'logout'
+    })
+  };
+  callAuthApi(option);
+}
+
+async function callAuthApi(option) {
+  const authApi = '/api/auth';
+  const response = await fetch(authApi, option);
   if (response.ok) {
     const json = await response.json();
-    const uid = json.uid;
-    const idToken = json.idToken;
-    if (uid && idToken) {
-      result.userData.uid = uid;
-      result.userData.idToken = idToken;
-
-      if (mode !== 'login') {
-        const template = {
-          userName: userName,
-          words: {},
-          languages: []
-        };
-        const updated = await callWordApi(uid, idToken, template);
-        if (!updated) {
-          result.error = true;
-        }
-      }
-    } else {
-      result.error = true;
-    }
-  } else {
-    result.error = true;
+    return json;
   }
-  return result;
 }
-async function callWordApi(uid, idToken, wordData) {
+
+// async function callRefreshApi(uid) {
+//   const apiUrl = '/api/refresh';
+//   const option = {
+//     method: 'POST',
+//     body: JSON.stringify({
+//       uid: uid
+//     })
+//   };
+//   const response = await fetch(apiUrl, option);
+
+//   if (response.ok) {
+//     const json = await response.json();
+//     const uid = json.uid;
+//     const expiration = json.expiration;
+//     localStorage.setItem('uid', uid);
+//     localStorage.setItem('expiration', expiration);
+//   }
+// }
+
+async function callWordApi(uid, wordData) {
   const wordUrl = '/api/word';
   const method = wordData ? 'PATCH' : 'POST';
   const option = {
     method: method,
     body: JSON.stringify({
       uid: uid,
-      idToken: idToken,
       wordData: wordData
     })
   };
   const response = await fetch(wordUrl, option);
-  return method === 'PATCH' ? response.ok : await response.json();
+  console.log('method: ' + method + ', result: ' + response.ok);
+  if (method === 'PATCH') {
+    return response.ok;
+  } else {
+    console.log('POST result: ' + response.ok);
+    console.log(response);
+    if (response.ok) {
+      return await response.json();
+    }
+    return null;
+  }
 }

@@ -1,16 +1,22 @@
 import { useApiUtility } from './_utility.js';
+import { refreshIfNecessary } from './auth.js';
 
 export async function PATCH(request) {
   const body = await request.json();
   const uid = body.uid;
-  const idToken = body.idToken;
   const wordData = body.wordData;
 
   const util = useApiUtility();
 
-  if (!uid || !idToken || !wordData) {
-    return util.errorResponse();
+  if (!uid || !wordData) {
+    return util.errorResponse('Invalid parameter: uid, wordData must be set in patch method.');
   }
+
+  const checkResult = await refreshIfNecessary(uid);
+  if (!checkResult.ok) {
+    return util.errorResponse('Token expired. Re-authentication required.');
+  }
+  const idToken = await util.kvGet(uid, 'idToken');
 
   const baseUrl = process.env.FIREBASE_DOMAIN_DATA;
   const wordsUrl = `${baseUrl}/users/${uid}/data.json?auth=${idToken}`;
@@ -24,13 +30,19 @@ export async function PATCH(request) {
 export async function POST(request) {
   const body = await request.json();
   const uid = body.uid;
-  const idToken = body.idToken;
 
   const util = useApiUtility();
 
-  if (!uid || !idToken) {
-    return util.errorResponse();
+  if (!uid) {
+    return util.errorResponse('Invalid parameter: uid must be set in post method.');
   }
+
+  const checkResult = await refreshIfNecessary(uid);
+  if (!checkResult.ok) {
+    return util.errorResponse('Token expired. Re-authentication required.');
+  }
+
+  const idToken = await util.kvGet(uid, 'idToken');
 
   const baseUrl = process.env.FIREBASE_DOMAIN_DATA;
   const wordsUrl = `${baseUrl}/users/${uid}/data.json?auth=${idToken}`;
