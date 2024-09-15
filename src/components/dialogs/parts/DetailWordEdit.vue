@@ -99,13 +99,14 @@ const emits = defineEmits(['editSave', 'editCancel', 'delete']);
 const store = useWordStore();
 
 const wordText = ref(props.word.text);
-const wordType = ref(props.word.type);
+// const wordType = ref(props.word.type);
 const wordDesc = ref(props.word.description);
 const deleteDialog = ref(false);
 const isSaving = ref(false);
 const isDeleting = ref(false);
 const typeKeys = store.getTypeKeys();
-const selectedType = ref(typeKeys[0]);
+const initialType = typeKeys.find((key) => key === props.word.type);
+const selectedType = ref(initialType);
 const validationError = computed(() => {
   return textError.value;
 });
@@ -126,7 +127,7 @@ function onSave() {
   isSaving.value = true;
   const payload = {
     text: wordText.value,
-    type: wordType.value,
+    type: selectedType.value,
     description: wordDesc.value
   };
   emits('editSave', payload, () => (isSaving.value = false));
