@@ -21,8 +21,16 @@ export const useWordStore = defineStore('word', () => {
 
   async function loadUserWords() {
     const api = useApi();
-    const wordData = await api.callWordApi(currentUser.value.uid, currentUser.value.idToken);
+    const wordData = await api.callWordApi(currentUser.value.uid);
     if (wordData) {
+      if (!wordData.languages) {
+        wordData.languages = [];
+      }
+      if (!wordData.words) {
+        wordData.words = {};
+      }
+      console.log(wordData);
+
       userWords.value = wordData;
       return;
     }
@@ -107,16 +115,13 @@ export const useWordStore = defineStore('word', () => {
     }
 
     const api = useApi();
-    const result = await api.callWordApi(
-      currentUser.value.uid,
-      currentUser.value.idToken,
-      userWords.value
-    );
+    const result = await api.callWordApi(currentUser.value.uid, userWords.value);
     return result;
   }
 
   async function editWord(lang, id, text, type, description) {
     const index = userWords.value.words[lang].findIndex((word) => word.id === id);
+    console.log('edit index: ' + index);
     if (index > -1) {
       const edited = {
         id: id,
@@ -127,11 +132,7 @@ export const useWordStore = defineStore('word', () => {
       userWords.value.words[lang].splice(index, 1, edited);
 
       const api = useApi();
-      const result = await api.callWordApi(
-        currentUser.value.uid,
-        currentUser.value.idToken,
-        userWords.value
-      );
+      const result = await api.callWordApi(currentUser.value.uid, userWords.value);
       return result;
     }
     return false;
@@ -143,11 +144,7 @@ export const useWordStore = defineStore('word', () => {
       userWords.value.words[lang].splice(index, 1);
 
       const api = useApi();
-      const result = await api.callWordApi(
-        currentUser.value.uid,
-        currentUser.value.idToken,
-        userWords.value
-      );
+      const result = await api.callWordApi(currentUser.value.uid, userWords.value);
       return result;
     }
     return false;
@@ -184,9 +181,9 @@ export const useWordStore = defineStore('word', () => {
     setCurrentTab(null);
   }
 
-  function initialize() {
+  async function initialize() {
     clearWordData();
-    loadUserWords();
+    await loadUserWords();
   }
 
   return {
