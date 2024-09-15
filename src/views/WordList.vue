@@ -1,6 +1,7 @@
 <template>
   <v-card class="mx-auto pa-2 pb-8" max-width="448" rounded="lg" variant="text">
-    <div v-if="isVisibleWords">
+    <v-skeleton-loader type="card" v-if="isProcessing"></v-skeleton-loader>
+    <div v-else-if="isVisibleWords">
       <WordListLangTabs></WordListLangTabs>
       <WordListCondition @updateFilter="onUpdateFilter"></WordListCondition>
       <WordListItem :words="displayWords"></WordListItem>
@@ -30,6 +31,10 @@ const displayWords = computed(() => {
 
 const isVisibleWords = computed(() => {
   return !!store.currentTab;
+});
+
+const isProcessing = computed(() => {
+  return store.isProcessing;
 });
 
 function onUpdateFilter(value) {

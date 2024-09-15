@@ -14,6 +14,8 @@ export const useWordStore = defineStore('word', () => {
 
   const userWords = ref(null);
 
+  const isProcessing = ref(false);
+
   const filterCondition = ref({
     byLetter: '',
     byType: []
@@ -180,8 +182,10 @@ export const useWordStore = defineStore('word', () => {
   }
 
   async function initialize() {
+    isProcessing.value = true;
     clearWordData();
     await loadUserWords();
+    isProcessing.value = false;
   }
 
   return {
@@ -190,6 +194,7 @@ export const useWordStore = defineStore('word', () => {
     userTabs,
     currentTab,
     supportLang,
+    isProcessing,
     getWord,
     addWord,
     editWord,
