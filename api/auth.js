@@ -92,49 +92,6 @@ async function logout(uid) {
     return util.errorResponse('Unexpected error occurred as deleting session.');
   }
 }
-// async function autoLogin(uid) {
-//   const util = useApiUtility();
-//   const session = await util.kvGetAll(uid);
-
-//   if (!session) {
-//     return util.errorResponse('No session exists.');
-//   }
-
-//   const expiration = session.expiration;
-//   const threshold = process.env.EXPIRATION_THRESHOLD;
-//   const isExpired = expiration - new Date().getTime() > threshold;
-
-//   if (!isExpired) {
-//     // TODO add expiration date to response for the client to setTimeout
-//     return util.okResponse({ uid });
-//   }
-
-//   // TODO Implement refreshing token code
-//   const apiKey = process.env.FIREBASE_APIKEY;
-//   const url = `https://securetoken.googleapis.com/v1/token?key=${apiKey}`;
-//   const refreshToken = session.refreshToken;
-//   const payload = {
-//     grant_type: 'refresh_token',
-//     refresh_token: refreshToken
-//   };
-//   const option = {
-//     method: 'POST',
-//     body: JSON.stringify(payload)
-//   };
-//   const result = await fetch(url, option);
-//   if (result.ok) {
-//     const json = await result.json();
-//     // const uid = json.localId;
-//     const newIdToken = json.id_token;
-//     const newExpiresIn = json.expires_in;
-//     const newExpiration = new Date().getTime() + newExpiresIn * 1000;
-//     const newRefreshToken = json.refresh_token;
-//     const success = await util.setKv(uid, { newIdToken, newExpiration, newRefreshToken });
-//     if (success) {
-//       return util.okResponse({ uid });
-//     }
-//   }
-// }
 
 export async function refreshIfNecessary(uid) {
   const session = await util.kvGetAll(uid);

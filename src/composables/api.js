@@ -92,25 +92,6 @@ async function callAuthApi(option) {
   }
 }
 
-// async function callRefreshApi(uid) {
-//   const apiUrl = '/api/refresh';
-//   const option = {
-//     method: 'POST',
-//     body: JSON.stringify({
-//       uid: uid
-//     })
-//   };
-//   const response = await fetch(apiUrl, option);
-
-//   if (response.ok) {
-//     const json = await response.json();
-//     const uid = json.uid;
-//     const expiration = json.expiration;
-//     localStorage.setItem('uid', uid);
-//     localStorage.setItem('expiration', expiration);
-//   }
-// }
-
 async function callWordApi(uid, wordData) {
   const wordUrl = '/api/word';
   const method = wordData ? 'PATCH' : 'POST';
