@@ -40,6 +40,10 @@ export const useWordStore = defineStore('word', () => {
     return userWords.value?.languages || [];
   });
 
+  const userName = computed(() => {
+    return userWords.value?.userName || '';
+  });
+
   const userTabs = computed(() => {
     const userTabs = [];
     userLanguages.value.forEach((userLang) => {
@@ -195,6 +199,7 @@ export const useWordStore = defineStore('word', () => {
     currentTab,
     supportLang,
     isProcessing,
+    userName,
     getWord,
     addWord,
     editWord,
