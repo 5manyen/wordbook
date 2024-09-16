@@ -21,15 +21,6 @@
 
     <div class="text-subtitle-1 text-medium-emphasis">Word Type</div>
 
-    <!-- <v-radio-group inline v-model="type" density="comfortable" :rules="[typeRules.required]">
-      <v-radio label="Noun" value="noun"></v-radio>
-      <v-radio label="Verb" value="verb"></v-radio>
-      <v-radio label="Adjective" value="adjective"></v-radio>
-      <v-radio label="Adverb" value="adverb"></v-radio>
-      <v-radio label="Idiom" value="idiom"></v-radio>
-      <v-radio label="Other" value="other"></v-radio>
-    </v-radio-group> -->
-
     <v-responsive class="overflow-y-auto" max-height="280">
       <v-chip-group mandatory column filter v-model="selectedType">
         <WordTypeChip
@@ -60,11 +51,12 @@
       variant="tonal"
       block
       @click="submit"
-      :disabled="validationError"
-      :loading="isLoading"
+      :disabled="validationError || isLoading"
     >
       Submit
     </v-btn>
+
+    <LoaderOverlay :is-active="isLoading"></LoaderOverlay>
   </v-card>
 </template>
 
@@ -73,6 +65,7 @@ import { computed, ref } from 'vue';
 import { useWordStore } from '@/stores/word';
 
 import WordTypeChip from '../parts/WordTypeChip.vue';
+import LoaderOverlay from '../parts/LoaderOverlay.vue';
 
 const emits = defineEmits(['close']);
 const text = ref('');

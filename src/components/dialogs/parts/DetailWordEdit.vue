@@ -56,8 +56,7 @@
       variant="tonal"
       block
       @click="onSave"
-      :loading="isSaving"
-      :disabled="validationError"
+      :disabled="validationError || isSaving"
     >
       Save
     </v-btn>
@@ -76,10 +75,12 @@
 
           <v-btn @click="cancelDelete"> Cancel </v-btn>
 
-          <v-btn @click="onDelete" :loading="isDeleting"> Delete </v-btn>
+          <v-btn @click="onDelete" :disabled="isDeleting"> Delete </v-btn>
         </template>
       </v-card>
     </v-dialog>
+
+    <LoaderOverlay :is-active="isSaving || isDeleting"></LoaderOverlay>
   </v-card>
 </template>
 
@@ -89,6 +90,7 @@ import { computed, ref } from 'vue';
 import { useWordStore } from '@/stores/word';
 
 import WordTypeChip from '@/components/parts/WordTypeChip.vue';
+import LoaderOverlay from '@/components/parts/LoaderOverlay.vue';
 
 const props = defineProps({
   lang: String,
