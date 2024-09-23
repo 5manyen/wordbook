@@ -119,7 +119,6 @@ export const useWordStore = defineStore('word', () => {
 
   async function editWord(lang, id, text, type, description) {
     const index = userWords.value.words[lang].findIndex((word) => word.id === id);
-    console.log('edit index: ' + index);
     if (index > -1) {
       const edited = {
         id: id,
