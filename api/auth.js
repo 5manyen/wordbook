@@ -96,7 +96,7 @@ async function logout(uid) {
 export async function refreshIfNecessary(uid) {
   const session = await util.kvGetAll(uid);
   const expiration = session.expiration;
-  const threshold = process.env.EXPIRATION_THRESHOLD;
+  const threshold = process.env.VITE_REAUTH_THRESHOLD;
   const isExpired = new Date().getTime() - expiration < threshold;
 
   if (isExpired) {
