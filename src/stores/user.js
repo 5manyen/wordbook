@@ -34,7 +34,6 @@ export const useUserStore = defineStore('user', () => {
   async function login(userName, password) {
     const api = useApi();
     const userData = await api.login(userName, password);
-    console.log(userData);
     if (userData) {
       localStorage.setItem('uid', userData.uid);
       userContext.value.loginUser = userData;
