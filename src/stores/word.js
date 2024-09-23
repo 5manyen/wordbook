@@ -21,6 +21,34 @@ export const useWordStore = defineStore('word', () => {
     byType: []
   });
 
+  const sortDefs = [
+    {
+      name: 'Date Asc',
+      value: 1
+    },
+    {
+      name: 'Date Desc',
+      value: 2
+    },
+    {
+      name: 'Alph Asc',
+      value: 3
+    },
+    {
+      name: 'Alph Desc',
+      value: 4
+    }
+  ];
+
+  const sortWay = ref(sortDefs[0]);
+
+  const isFilterOn = computed(() => {
+    const filterOn =
+      filterCondition.value?.byLetter !== '' || filterCondition.value?.byType?.length > 0;
+    const sortOn = sortDefs.findIndex((elm) => elm.value === sortWay.value?.value);
+    return filterOn || sortOn;
+  });
+
   async function loadUserWords() {
     const api = useApi();
     const wordData = await api.callWordApi(currentUser.value.uid);
@@ -175,6 +203,18 @@ export const useWordStore = defineStore('word', () => {
     };
   }
 
+  function getFilterCondition() {
+    return filterCondition.value;
+  }
+
+  function setSortway(value) {
+    sortWay.value = value;
+  }
+
+  function getSortway() {
+    return sortWay.value;
+  }
+
   function clearFilterCondition() {
     setFilterCondition();
   }
@@ -200,12 +240,17 @@ export const useWordStore = defineStore('word', () => {
     supportLang,
     isProcessing,
     userName,
+    sortDefs,
+    isFilterOn,
     getWord,
     addWord,
     editWord,
     deleteWord,
     getType,
     setFilterCondition,
+    getFilterCondition,
+    setSortway,
+    getSortway,
     clearFilterCondition,
     obtainLangName,
     getTypeKeys,

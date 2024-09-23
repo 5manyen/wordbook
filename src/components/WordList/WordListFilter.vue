@@ -30,7 +30,7 @@
 
     <v-select
       :items="sortItemList"
-      item-title="title"
+      item-title="name"
       item-value="value"
       v-model="sortItem"
       density="compact"
@@ -51,8 +51,12 @@ const emits = defineEmits(['updateFilter', 'close']);
 const store = useWordStore();
 const typeKeys = store.getTypeKeys();
 
-const inputWord = ref('');
-const selectedTypes = ref([]);
+const storedCondition = store.getFilterCondition();
+const initialWord = storedCondition.byLetter;
+const initialTypes = storedCondition.byType;
+
+const inputWord = ref(initialWord);
+const selectedTypes = ref(initialTypes);
 const filterCondition = computed(() => {
   const condition = {
     searchWord: inputWord.value,
@@ -61,25 +65,8 @@ const filterCondition = computed(() => {
   return condition;
 });
 
-const sortItemList = [
-  {
-    title: 'Date Asc',
-    value: 1
-  },
-  {
-    title: 'Date Desc',
-    value: 2
-  },
-  {
-    title: 'Alph - Asc',
-    value: 3
-  },
-  {
-    title: 'Alph - Desc',
-    value: 4
-  }
-];
-const sortItem = ref(sortItemList[0]);
+const sortItemList = store.sortDefs;
+const sortItem = ref(store.getSortway());
 
 function chipStyle(key) {
   const isSelected = selectedTypes.value.includes(key);
@@ -87,7 +74,7 @@ function chipStyle(key) {
 }
 
 function apply() {
-  emits('updateFilter', filterCondition.value);
+  emits('updateFilter', filterCondition.value, sortItem.value);
   emits('close');
 }
 </script>

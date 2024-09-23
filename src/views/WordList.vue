@@ -24,8 +24,48 @@ const filterCondtions = ref({
   searchTypes: []
 });
 
+const sortway = ref(store.getSortway()[0]);
+
 const displayWords = computed(() => {
-  let filteredWords = store.filteredWords;
+  const filteredWords = [...store.filteredWords];
+  const sortValue = sortway.value;
+  if (Number.isInteger(sortValue)) {
+    let sortedWords;
+    switch (sortValue) {
+      case 1:
+        // date ascending
+        sortedWords = filteredWords.sort((a, b) => {
+          const aDate = a.date || 0;
+          const bDate = b.date || 0;
+          return aDate - bDate;
+        });
+        break;
+      case 2:
+        sortedWords = filteredWords.sort((a, b) => {
+          const aDate = a.date || 0;
+          const bDate = b.date || 0;
+          return bDate - aDate;
+        });
+        break;
+      case 3:
+        sortedWords = filteredWords.sort((a, b) => {
+          const aText = a.text;
+          const bText = b.text;
+          return aText.localeCompare(bText);
+        });
+        break;
+      case 4:
+        sortedWords = filteredWords.sort((a, b) => {
+          const aText = a.text;
+          const bText = b.text;
+          return -1 * aText.localeCompare(bText);
+        });
+        break;
+      default:
+        sortedWords = filteredWords;
+    }
+    return sortedWords;
+  }
   return filteredWords;
 });
 
@@ -37,11 +77,16 @@ const isProcessing = computed(() => {
   return store.isProcessing;
 });
 
-function onUpdateFilter(value) {
-  filterCondtions.value = value;
+function onUpdateFilter(filter, sort) {
+  filterCondtions.value = filter;
+  sortway.value = sort;
 }
 
 watch(filterCondtions, () => {
   store.setFilterCondition(filterCondtions.value.searchWord, filterCondtions.value.searchTypes);
+});
+
+watch(sortway, () => {
+  store.setSortway(sortway.value);
 });
 </script>
