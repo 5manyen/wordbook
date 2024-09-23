@@ -120,7 +120,7 @@ export async function refreshIfNecessary(uid) {
         const newExpiresIn = json.expires_in;
         const newExpiration = new Date().getTime() + newExpiresIn * 1000;
         const newRefreshToken = json.refresh_token;
-        const kvResult = await util.setKv(uid, {
+        const kvResult = await util.kvSet(uid, {
           idToken: newIdToken,
           expiration: newExpiration,
           refreshToken: newRefreshToken
@@ -128,8 +128,8 @@ export async function refreshIfNecessary(uid) {
         if (kvResult) {
           return util.okResponse({ refreshed: true });
         }
-        return util.errorResponse('Refreshing session failed.');
       }
+      return util.errorResponse('Refreshing session failed.');
     } catch (err) {
       return util.errorResponse('Unexpected error occurred as refreshing session.');
     }
