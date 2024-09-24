@@ -1,24 +1,67 @@
 <template>
-  <v-expansion-panels>
-    <v-expansion-panel>
-      <v-expansion-panel-title static>
-        <span class="text-caption">Search & Sort</span>
-      </v-expansion-panel-title>
-      <v-expansion-panel-text>
-        <WordListFilter @updateFilter="onUpdateFilter"></WordListFilter>
-        <WordSort></WordSort>
-      </v-expansion-panel-text>
-    </v-expansion-panel>
-  </v-expansion-panels>
+  <div class="d-flex justify-end">
+    <FilterChips :keys="keys" v-if="keys.length > 0" @clearFilter="onClearFilter"></FilterChips>
+    <!-- <v-spacer></v-spacer> -->
+    <v-btn size="small" variant="plain" @click="filterDialog = true">
+      <v-icon size="x-large" v-if="!store.isFilterOn"> mdi-filter-outline </v-icon>
+      <v-icon size="x-large" v-else color="indigo-darken-3"> mdi-filter </v-icon>
+      <v-dialog v-model="filterDialog" :fullscreen="isFullscreen">
+        <WordListFilter @close="filterDialog = false"></WordListFilter>
+      </v-dialog>
+    </v-btn>
+  </div>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue';
+
+import { useDisplay } from 'vuetify/lib/framework.mjs';
+import { useWordStore } from '@/stores/word';
+
 import WordListFilter from './WordListFilter.vue';
-import WordSort from './WordSort.vue';
+import FilterChips from '../parts/FilterChips.vue';
 
-const emits = defineEmits(['updateFilter', 'updateSort']);
+const display = useDisplay();
+const store = useWordStore();
 
-function onUpdateFilter(value) {
-  emits('updateFilter', value);
+const filterDialog = ref(false);
+const keys = computed(() => {
+  const arr = [];
+  const filterCondition = store.getFilterCondition();
+  const sortway = store.getSortway();
+  const byLetter = filterCondition.byLetter;
+  if (byLetter && byLetter !== '') {
+    arr.push({ kind: 'byLetter', value: byLetter });
+  }
+  const byType = filterCondition.byType;
+  if (byType && byType.length > 0) {
+    byType.forEach((type) => {
+      arr.push({ kind: 'byType', value: type });
+    });
+  }
+  const sortValue = sortway.value;
+  if (sortValue !== 1) {
+    arr.push({ kind: 'sort', value: sortway.otherName });
+  }
+  return arr;
+});
+
+const isFullscreen = computed(() => {
+  return display.xs.value;
+});
+
+function onClearFilter(target) {
+  const found = keys.value.find((key) => key.value === target.value);
+  const currentFilterCondition = store.getFilterCondition();
+  if (found?.kind === 'byLetter') {
+    store.setFilterCondition('', currentFilterCondition.byType);
+  } else if (found?.kind === 'byType') {
+    const arr = [...currentFilterCondition.byType];
+    const index = arr.findIndex((type) => type === found.value);
+    arr.splice(index, 1);
+    store.setFilterCondition(currentFilterCondition.byLetter, arr);
+  } else if (found?.kind === 'sort') {
+    store.setSortway();
+  }
 }
 </script>

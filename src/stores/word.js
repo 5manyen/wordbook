@@ -14,9 +14,43 @@ export const useWordStore = defineStore('word', () => {
 
   const userWords = ref(null);
 
+  const isProcessing = ref(false);
+
   const filterCondition = ref({
     byLetter: '',
     byType: []
+  });
+
+  const sortDefs = [
+    {
+      name: 'Date Asc',
+      otherName: 'date↑',
+      value: 1
+    },
+    {
+      name: 'Date Desc',
+      otherName: 'date↓',
+      value: 2
+    },
+    {
+      name: 'Alph Asc',
+      otherName: 'abc↑',
+      value: 3
+    },
+    {
+      name: 'Alph Desc',
+      otherName: 'abc↓',
+      value: 4
+    }
+  ];
+
+  const sortWay = ref(sortDefs[0]);
+
+  const isFilterOn = computed(() => {
+    const filterOn =
+      filterCondition.value?.byLetter !== '' || filterCondition.value?.byType?.length > 0;
+    const sortOn = sortDefs.findIndex((elm) => elm.value === sortWay.value?.value);
+    return filterOn || sortOn;
   });
 
   async function loadUserWords() {
@@ -36,6 +70,10 @@ export const useWordStore = defineStore('word', () => {
 
   const userLanguages = computed(() => {
     return userWords.value?.languages || [];
+  });
+
+  const userName = computed(() => {
+    return userWords.value?.userName || '';
   });
 
   const userTabs = computed(() => {
@@ -78,6 +116,45 @@ export const useWordStore = defineStore('word', () => {
       const types = filterCondition.value.byType;
       if (types?.length > 0) {
         filteredWords = filteredWords.filter((word) => types.includes(word.type));
+      }
+      const sortValue = sortWay.value.value;
+      if (Number.isInteger(sortValue)) {
+        let sortedWords;
+        // shallow copy
+        filteredWords = [...filteredWords];
+        switch (sortValue) {
+          case 1:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aDate = a.date || 0;
+              const bDate = b.date || 0;
+              return aDate - bDate;
+            });
+            break;
+          case 2:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aDate = a.date || 0;
+              const bDate = b.date || 0;
+              return bDate - aDate;
+            });
+            break;
+          case 3:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aText = a.text;
+              const bText = b.text;
+              return aText.localeCompare(bText);
+            });
+            break;
+          case 4:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aText = a.text;
+              const bText = b.text;
+              return -1 * aText.localeCompare(bText);
+            });
+            break;
+          default:
+            sortedWords = filteredWords;
+        }
+        return sortedWords;
       }
     }
     return filteredWords;
@@ -168,6 +245,18 @@ export const useWordStore = defineStore('word', () => {
     };
   }
 
+  function getFilterCondition() {
+    return filterCondition.value;
+  }
+
+  function setSortway(value = sortDefs[0]) {
+    sortWay.value = value;
+  }
+
+  function getSortway() {
+    return sortWay.value;
+  }
+
   function clearFilterCondition() {
     setFilterCondition();
   }
@@ -179,8 +268,10 @@ export const useWordStore = defineStore('word', () => {
   }
 
   async function initialize() {
+    isProcessing.value = true;
     clearWordData();
     await loadUserWords();
+    isProcessing.value = false;
   }
 
   return {
@@ -189,12 +280,19 @@ export const useWordStore = defineStore('word', () => {
     userTabs,
     currentTab,
     supportLang,
+    isProcessing,
+    userName,
+    sortDefs,
+    isFilterOn,
     getWord,
     addWord,
     editWord,
     deleteWord,
     getType,
     setFilterCondition,
+    getFilterCondition,
+    setSortway,
+    getSortway,
     clearFilterCondition,
     obtainLangName,
     getTypeKeys,

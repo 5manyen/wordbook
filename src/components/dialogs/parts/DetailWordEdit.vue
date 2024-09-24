@@ -17,15 +17,6 @@
 
     <div class="text-subtitle-1 text-medium-emphasis">Word Type</div>
 
-    <!-- <v-radio-group inline v-model="wordType" density="comfortable" :rules="[typeRules.required]">
-      <v-radio label="Noun" value="noun"></v-radio>
-      <v-radio label="Verb" value="verb"></v-radio>
-      <v-radio label="Adjective" value="adjective"></v-radio>
-      <v-radio label="Adverb" value="adverb"></v-radio>
-      <v-radio label="Idiom" value="idiom"></v-radio>
-      <v-radio label="Other" value="other"></v-radio>
-    </v-radio-group> -->
-
     <v-responsive class="overflow-y-auto" max-height="280">
       <v-chip-group mandatory column filter v-model="selectedType">
         <WordTypeChip
@@ -56,30 +47,40 @@
       variant="tonal"
       block
       @click="onSave"
-      :loading="isSaving"
-      :disabled="validationError"
+      :disabled="validationError || isSaving"
     >
       Save
     </v-btn>
 
     <div class="pt-4 text-center">
-      <a class="text-red text-decoration-none" @click="confirmDelete">
+      <v-btn size="small" variant="text" class="text-red" @click="confirmDelete">
         <v-icon size="small"> mdi-delete-alert </v-icon>
         DELETE
-      </a>
+      </v-btn>
     </div>
 
-    <v-dialog v-model="deleteDialog">
-      <v-card prepend-icon="mdi-alert-circle-outline" text="This operation CANNOT revert.">
-        <template v-slot:actions>
+    <v-dialog v-model="deleteDialog" contained>
+      <v-card>
+        <v-alert
+          icon="$warning"
+          color="warning"
+          title="Caution"
+          variant="tonal"
+          text="This action cannot be reversed."
+        ></v-alert>
+        <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn @click="cancelDelete"> Cancel </v-btn>
+          <v-btn @click="cancelDelete" variant="tonal" color="blue-grey"> Cancel </v-btn>
 
-          <v-btn @click="onDelete" :loading="isDeleting"> Delete </v-btn>
-        </template>
+          <v-btn @click="onDelete" :disabled="isDeleting" variant="tonal" color="red-lighten-1">
+            Delete
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <LoaderOverlay :is-active="isSaving || isDeleting"></LoaderOverlay>
   </v-card>
 </template>
 
@@ -89,6 +90,7 @@ import { computed, ref } from 'vue';
 import { useWordStore } from '@/stores/word';
 
 import WordTypeChip from '@/components/parts/WordTypeChip.vue';
+import LoaderOverlay from '@/components/parts/LoaderOverlay.vue';
 
 const props = defineProps({
   lang: String,
@@ -99,7 +101,6 @@ const emits = defineEmits(['editSave', 'editCancel', 'delete']);
 const store = useWordStore();
 
 const wordText = ref(props.word.text);
-// const wordType = ref(props.word.type);
 const wordDesc = ref(props.word.description);
 const deleteDialog = ref(false);
 const isSaving = ref(false);
@@ -137,8 +138,10 @@ function onCancel() {
 }
 function onDelete() {
   isDeleting.value = true;
-  deleteDialog.value = false;
-  emits('delete', () => (isDeleting.value = false));
+  emits('delete', () => {
+    deleteDialog.value = false;
+    isDeleting.value = false;
+  });
 }
 function cancelDelete() {
   deleteDialog.value = false;

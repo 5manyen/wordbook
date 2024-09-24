@@ -48,17 +48,19 @@
       size="large"
       variant="tonal"
       block
-      :loading="loading"
-      :disabled="validationError"
+      :disabled="validationError || loading"
       @click="submit"
-      >{{ submitButtonCaption }}</v-btn
     >
+      {{ submitButtonCaption }}
+    </v-btn>
 
     <v-card-text class="text-center">
       <a class="text-blue text-decoration-none" @click="switchMode">
         {{ modeSwitchCaption }}<v-icon icon="mdi-chevron-right"></v-icon>
       </a>
     </v-card-text>
+
+    <LoaderOverlay :is-active="loading"></LoaderOverlay>
   </v-card>
 </template>
 
@@ -67,6 +69,8 @@ import { computed, ref } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+
+import LoaderOverlay from '@/components/parts/LoaderOverlay.vue';
 
 const store = useUserStore();
 const router = useRouter();
