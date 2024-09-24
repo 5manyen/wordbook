@@ -24,18 +24,22 @@ export const useWordStore = defineStore('word', () => {
   const sortDefs = [
     {
       name: 'Date Asc',
+      otherName: 'date↑',
       value: 1
     },
     {
       name: 'Date Desc',
+      otherName: 'date↓',
       value: 2
     },
     {
       name: 'Alph Asc',
+      otherName: 'abc↑',
       value: 3
     },
     {
       name: 'Alph Desc',
+      otherName: 'abc↓',
       value: 4
     }
   ];
