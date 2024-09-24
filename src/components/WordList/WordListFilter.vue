@@ -33,6 +33,7 @@
       item-title="name"
       item-value="value"
       v-model="sortItem"
+      return-object
       density="compact"
       variant="outlined"
     ></v-select>
@@ -42,7 +43,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useWordStore } from '@/stores/word';
 import WordTypeChip from '../parts/WordTypeChip.vue';
 
@@ -57,13 +58,6 @@ const initialTypes = storedCondition.byType;
 
 const inputWord = ref(initialWord);
 const selectedTypes = ref(initialTypes);
-const filterCondition = computed(() => {
-  const condition = {
-    searchWord: inputWord.value,
-    searchTypes: selectedTypes.value
-  };
-  return condition;
-});
 
 const sortItemList = store.sortDefs;
 const sortItem = ref(store.getSortway());
@@ -74,7 +68,8 @@ function chipStyle(key) {
 }
 
 function apply() {
-  emits('updateFilter', filterCondition.value, sortItem.value);
+  store.setFilterCondition(inputWord.value, selectedTypes.value);
+  store.setSortway(sortItem.value);
   emits('close');
 }
 </script>

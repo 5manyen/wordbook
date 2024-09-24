@@ -117,6 +117,45 @@ export const useWordStore = defineStore('word', () => {
       if (types?.length > 0) {
         filteredWords = filteredWords.filter((word) => types.includes(word.type));
       }
+      const sortValue = sortWay.value.value;
+      if (Number.isInteger(sortValue)) {
+        let sortedWords;
+        // shallow copy
+        filteredWords = [...filteredWords];
+        switch (sortValue) {
+          case 1:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aDate = a.date || 0;
+              const bDate = b.date || 0;
+              return aDate - bDate;
+            });
+            break;
+          case 2:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aDate = a.date || 0;
+              const bDate = b.date || 0;
+              return bDate - aDate;
+            });
+            break;
+          case 3:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aText = a.text;
+              const bText = b.text;
+              return aText.localeCompare(bText);
+            });
+            break;
+          case 4:
+            sortedWords = filteredWords.sort((a, b) => {
+              const aText = a.text;
+              const bText = b.text;
+              return -1 * aText.localeCompare(bText);
+            });
+            break;
+          default:
+            sortedWords = filteredWords;
+        }
+        return sortedWords;
+      }
     }
     return filteredWords;
   });
@@ -211,7 +250,7 @@ export const useWordStore = defineStore('word', () => {
     return filterCondition.value;
   }
 
-  function setSortway(value) {
+  function setSortway(value = sortDefs[0]) {
     sortWay.value = value;
   }
 

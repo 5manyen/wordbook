@@ -1,7 +1,6 @@
 <template>
-  <v-responsive class="overflow-y-auto" max-height="280">
-    <v-chip v-for="key in keys" closable @click:close="onClose(key)">
-      {{ key }}
+  <v-responsive class="overflow-y-auto" max-width="100%">
+    <v-chip v-for="key in keys" :key="key" :text="key.value" closable @click:close="onClose(key)">
     </v-chip>
   </v-responsive>
 </template>
@@ -11,7 +10,7 @@ const props = defineProps({
   keys: Array
 });
 
-const emits = defineEmits('clearFilter');
+const emits = defineEmits(['clearFilter']);
 
 function onClose(key) {
   emits('clearFilter', key);
