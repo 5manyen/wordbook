@@ -48,17 +48,19 @@
       size="large"
       variant="tonal"
       block
-      :loading="loading"
-      :disabled="validationError"
+      :disabled="validationError || loading"
       @click="submit"
-      >{{ submitButtonCaption }}</v-btn
     >
+      {{ submitButtonCaption }}
+    </v-btn>
 
     <v-card-text class="text-center">
       <a class="text-blue text-decoration-none" @click="switchMode">
         {{ modeSwitchCaption }}<v-icon icon="mdi-chevron-right"></v-icon>
       </a>
     </v-card-text>
+
+    <LoaderOverlay :is-active="loading"></LoaderOverlay>
   </v-card>
 </template>
 
@@ -67,6 +69,8 @@ import { computed, ref } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+
+import LoaderOverlay from '@/components/parts/LoaderOverlay.vue';
 
 const store = useUserStore();
 const router = useRouter();
@@ -149,21 +153,25 @@ const modeSwitchCaption = computed(() => {
 async function submit() {
   loading.value = true;
   submitError.value = false;
-  if (loginMode.value) {
-    const result = await store.login(userName.value, password.value);
-    if (result) {
-      router.replace('/');
-      return;
+  let result = false;
+  let errorMessage = '';
+  try {
+    if (loginMode.value) {
+      result = await store.login(userName.value, password.value);
+      errorMessage = 'Authentication failed. Please check your input and try again.';
+    } else {
+      result = await store.signUp(userName.value, password.value);
+      errorMessage = 'Username already used. Please pick other name and try again.';
     }
-    submitErrorMessage.value = 'Authentication failed. Please check your input and try again.';
-  } else {
-    const result = await store.signUp(userName.value, password.value);
-    if (result) {
-      router.replace('/');
-      return;
-    }
-    submitErrorMessage.value = 'Username already used. Please pick other name and try again.';
+  } catch (err) {
+    console.log(err);
+    // if there is an error, result remain false.
   }
+  if (result) {
+    router.replace('/');
+    return;
+  }
+  submitErrorMessage.value = errorMessage;
   submitError.value = true;
   loading.value = false;
 }
