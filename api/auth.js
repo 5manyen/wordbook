@@ -97,8 +97,7 @@ export async function refreshIfNecessary(uid) {
   const session = await util.kvGetAll(uid);
   const expiration = session.expiration;
   const threshold = process.env.VITE_REAUTH_THRESHOLD;
-  const isExpired = new Date().getTime() - expiration < threshold;
-
+  const isExpired = expiration - new Date().getTime() < threshold;
   if (isExpired) {
     const apiKey = process.env.FIREBASE_APIKEY;
     const url = `https://securetoken.googleapis.com/v1/token?key=${apiKey}`;
