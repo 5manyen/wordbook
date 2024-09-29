@@ -16,10 +16,11 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: Login
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
     }
   ]
 });
@@ -27,7 +28,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const store = useUserStore();
   if (!store.isLoggedIn && to.name !== 'login') {
-    next('login');
+    next('/login');
+    return;
+  }
+  if (store.isLoggedIn && to.name === 'login') {
+    next('/');
     return;
   }
   next();
