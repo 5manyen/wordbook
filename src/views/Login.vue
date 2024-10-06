@@ -98,12 +98,12 @@ const userNameRules = {
     return 'User name is required.';
   },
   checkLength: (value) => {
-    if (value.length > 3) {
+    if (value.length > 3 && value.length < 21) {
       userNameError.value = false;
       return true;
     }
     userNameError.value = true;
-    return 'User name must be 4 characters or more.';
+    return 'User name must be 4 - 20 characters.';
   },
   checkPattern: (value) => {
     if (/^\w+$/.test(value)) {
@@ -125,12 +125,12 @@ const passwordRules = {
     return 'Password is required.';
   },
   checkLength: (value) => {
-    if (value.length > 5) {
+    if (value.length > 5 && value.length < 33) {
       passwordError.value = false;
       return true;
     }
     passwordError.value = true;
-    return 'Password must be 6 characters or more.';
+    return 'Password must be 6 - 32 characters.';
   },
   checkPattern: (value) => {
     if (/^\w+$/.test(value)) {

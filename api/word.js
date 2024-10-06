@@ -40,7 +40,6 @@ export async function POST(request) {
   const checkResult = await refreshIfNecessary(uid);
   if (!checkResult.ok) {
     return checkResult;
-    // return util.errorResponse('Token expired. Re-authentication required.');
   }
 
   const idToken = await util.kvGet(uid, 'idToken');
