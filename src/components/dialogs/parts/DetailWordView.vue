@@ -17,7 +17,7 @@
       <v-list>
         <v-list-item class="pl-0 px-1 pt-3">
           <v-list-item-title class="pb-1">Memo</v-list-item-title>
-          <div class="text-medium-emphasis">{{ word.description }}</div>
+          <p class="text-medium-emphasis">{{ word.description }}</p>
         </v-list-item>
         <v-list-item class="pl-0 px-1 pt-3" v-if="isGenerating || existsResult">
           <v-list-item-title class="pb-1">Ask AI</v-list-item-title>
@@ -99,3 +99,9 @@ function close() {
   emits('close');
 }
 </script>
+
+<style scoped>
+p {
+  white-space: pre-wrap;
+}
+</style>
