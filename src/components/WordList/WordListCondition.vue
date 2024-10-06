@@ -1,5 +1,6 @@
 <template>
   <v-row>
+    <v-col cols="1"></v-col>
     <v-col cols="8">
       <FilterChips :keys="keys" v-if="keys.length > 0" @clearFilter="onClearFilter"></FilterChips>
     </v-col>
@@ -12,6 +13,7 @@
         </v-dialog>
       </v-btn>
     </v-col>
+    <v-col cols="1"></v-col>
   </v-row>
 </template>
 
