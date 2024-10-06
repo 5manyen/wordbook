@@ -1,60 +1,67 @@
 <template>
   <v-card class="mx-auto pa-4 pb-8" elevation="8" max-width="100%" rounded="lg">
-    <div class="pb-3 text-h6 text-medium-emphasis d-flex justify-space-between">
-      <v-icon size="small"> mdi-tag-text-outline </v-icon>
-      Add Word
-      <v-icon size="small" @click="emits('close')"> mdi-close </v-icon>
-    </div>
+    <v-sheet>
+      <div class="pb-3 text-h6 text-medium-emphasis d-flex justify-space-between">
+        <v-icon size="small"> mdi-tag-text-outline </v-icon>
+        Add Word
+        <v-icon size="small" @click="emits('close')"> mdi-close </v-icon>
+      </div>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Language</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Language</div>
 
-    <v-select :items="langNameList" v-model="lang" density="compact" variant="outlined"></v-select>
+      <v-select
+        :items="langNameList"
+        v-model="lang"
+        density="compact"
+        variant="outlined"
+      ></v-select>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Word Text</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Word Text</div>
 
-    <v-text-field
-      density="compact"
-      variant="outlined"
-      v-model="text"
-      :rules="[textRules.required]"
-    ></v-text-field>
+      <v-text-field
+        density="compact"
+        variant="outlined"
+        v-model="text"
+        :rules="[textRules.required]"
+      ></v-text-field>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Word Type</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Word Type</div>
 
-    <v-responsive class="overflow-y-auto" max-height="280">
-      <v-chip-group mandatory column filter v-model="selectedType">
-        <WordTypeChip
-          v-for="key in typeKeys"
-          :key="key"
-          :type-key="key"
-          :value="key"
-          :variant="chipStyle(key)"
-          size="small"
-        ></WordTypeChip>
-      </v-chip-group>
-    </v-responsive>
+      <v-responsive class="overflow-y-auto" max-height="280">
+        <v-chip-group mandatory column filter v-model="selectedType">
+          <WordTypeChip
+            v-for="key in typeKeys"
+            :key="key"
+            :type-key="key"
+            :value="key"
+            :variant="chipStyle(key)"
+            size="small"
+          ></WordTypeChip>
+        </v-chip-group>
+      </v-responsive>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Your Memo</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Your Memo</div>
 
-    <v-textarea
-      density="compact"
-      rows="2"
-      clearable
-      auto-grow
-      v-model="description"
-      variant="outlined"
-    ></v-textarea>
+      <v-textarea
+        density="compact"
+        rows="2"
+        clearable
+        auto-grow
+        v-model="description"
+        variant="outlined"
+      ></v-textarea>
 
-    <v-btn
-      color="blue"
-      size="large"
-      variant="tonal"
-      block
-      @click="submit"
-      :disabled="validationError || isLoading"
-    >
-      Submit
-    </v-btn>
+      <v-btn
+        color="blue"
+        size="large"
+        variant="tonal"
+        block
+        @click="submit"
+        :disabled="validationError || isLoading"
+      >
+        Submit
+      </v-btn>
+    </v-sheet>
 
     <LoaderOverlay :is-active="isLoading"></LoaderOverlay>
   </v-card>

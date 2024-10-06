@@ -1,44 +1,46 @@
 <template>
   <v-card class="mx-auto pa-4 pb-8" elevation="8" max-width="100%" rounded="lg">
-    <div class="pb-3 text-h6 text-medium-emphasis d-flex justify-space-between">
-      <v-icon size="small"> mdi-filter-outline </v-icon>
-      Word Filter
-      <v-icon size="small" @click="emits('close')"> mdi-close </v-icon>
-    </div>
-    <v-divider class="mb-2"></v-divider>
+    <v-sheet>
+      <div class="pb-3 text-h6 text-medium-emphasis d-flex justify-space-between">
+        <v-icon size="small"> mdi-filter-outline </v-icon>
+        Word Filter
+        <v-icon size="small" @click="emits('close')"> mdi-close </v-icon>
+      </div>
+      <v-divider class="mb-2"></v-divider>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Word</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Word</div>
 
-    <v-text-field density="compact" variant="outlined" v-model="inputWord"></v-text-field>
+      <v-text-field density="compact" variant="outlined" v-model="inputWord"></v-text-field>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Type</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Type</div>
 
-    <v-responsive class="overflow-y-auto" max-height="280">
-      <v-chip-group multiple filter column v-model="selectedTypes">
-        <WordTypeChip
-          v-for="key in typeKeys"
-          :key="key"
-          :type-key="key"
-          :value="key"
-          :variant="chipStyle(key)"
-          size="small"
-        ></WordTypeChip>
-      </v-chip-group>
-    </v-responsive>
+      <v-responsive class="overflow-y-auto" max-height="280">
+        <v-chip-group multiple filter column v-model="selectedTypes">
+          <WordTypeChip
+            v-for="key in typeKeys"
+            :key="key"
+            :type-key="key"
+            :value="key"
+            :variant="chipStyle(key)"
+            size="small"
+          ></WordTypeChip>
+        </v-chip-group>
+      </v-responsive>
 
-    <div class="text-subtitle-1 text-medium-emphasis">Sort</div>
+      <div class="text-subtitle-1 text-medium-emphasis">Sort</div>
 
-    <v-select
-      :items="sortItemList"
-      item-title="name"
-      item-value="value"
-      v-model="sortItem"
-      return-object
-      density="compact"
-      variant="outlined"
-    ></v-select>
+      <v-select
+        :items="sortItemList"
+        item-title="name"
+        item-value="value"
+        v-model="sortItem"
+        return-object
+        density="compact"
+        variant="outlined"
+      ></v-select>
 
-    <v-btn color="blue" size="large" variant="tonal" block @click="apply"> Apply </v-btn>
+      <v-btn color="blue" size="large" variant="tonal" block @click="apply"> Apply </v-btn>
+    </v-sheet>
   </v-card>
 </template>
 
